@@ -66,7 +66,7 @@ for epoch in range(EPOCH):
     num_train_batch_per_epoch=int(train_data.x.shape[0]/BATCH_SIZE)
     num_test_batch_per_epoch=int(test_data.x.shape[0]/BATCH_SIZE)
     max_F1=0
-    for batch in range(num_train_batch_per_epoch):
+    for batch in range(3):
         batch_x,batch_y=train_data.next_batch(BATCH_SIZE)
         loss_,pred,_=sess.run([loss,viterbi_sequence,train_op],feed_dict={tf_x:batch_x,tf_y:batch_y,keep_prob:0.5})
         if batch %200==0:
@@ -84,13 +84,18 @@ for epoch in range(EPOCH):
         from utils import get_ner_word_and_tag
         pred_ner_word_and_tag=[]
         actu_ner_word_and_tag=[]
-        # for batch in range(num_train_batch_per_epoch):
-        #     batch_x,batch_y=train_data.next_batch(BATCH_SIZE)
-        #     pred=sess.run(viterbi_sequence,feed_dict={tf_x:batch_x,tf_y:batch_y,keep_prob:1})
-        #     pred_ner_word_and_tag.append(get_ner_word_and_tag(batch_x,pred,id2word,id2tag))
-        #     actu_ner_word_and_tag.append(get_ner_word_and_tag(batch_x,batch_y,id2word,id2tag))
-        #     #id2tag[pred]
-        #     #id2tag[batch_y]
+        for batch in range(num_train_batch_per_epoch):
+            batch_x,batch_y=train_data.next_batch(BATCH_SIZE)
+            pred=sess.run(viterbi_sequence,feed_dict={tf_x:batch_x,tf_y:batch_y,keep_prob:1})
+            # pre = pre[0]
+            pred_ner_word_and_tag = get_ner_word_and_tag(batch_x, pred, id2word, id2tag, pred_ner_word_and_tag)
+            actu_ner_word_and_tag = get_ner_word_and_tag(batch_x, batch_y, id2word, id2tag, actu_ner_word_and_tag)
+            # pred_ner_word_and_tag.extend(get_ner_word_and_tag(batch_x,pred,id2word,id2tag))
+            # actu_ner_word_and_tag.extend(get_ner_word_and_tag(batch_x,batch_y,id2word,id2tag))
+            print(pred[0].shape)
+            print(batch)
+            #id2tag[pred]
+            #id2tag[batch_y]
         # correct=[i for i in pred_ner_word_and_tag if i in actu_ner_word_and_tag]
         # if len(correct)!=0:
         #     ner_accuracy_rate=float(len(correct))/len(pred_ner_word_and_tag)
@@ -104,36 +109,36 @@ for epoch in range(EPOCH):
         #     print('test:')
         #     print('ner_accuracy_rate:0')
 
-        for batch in range(num_test_batch_per_epoch):
-            batch_x,batch_y=test_data.next_batch(BATCH_SIZE)
-            pred=sess.run(viterbi_sequence,feed_dict={tf_x:batch_x,tf_y:batch_y,keep_prob:1})
-            pred_ner_word_and_tag.extend(get_ner_word_and_tag(batch_x,pred,id2word,id2tag))
-            actu_ner_word_and_tag.extend(get_ner_word_and_tag(batch_x,batch_y,id2word,id2tag))
-            #id2tag[pred]
-            print(pred.shape)
-            print(batch_x.shape)
-            print(batch_y.shape)
-            # for i in range(batch_y.shape[0]):
-            #     actu_ner_word_and_tag.append(id2tag[batch_y[i]])
-        import operator
-        correct=0
-        for i in pred_ner_word_and_tag:
-            for j in actu_ner_word_and_tag:
-                if operator.eq(i,j):
-                    correct+=1
-                    break
-        # correct=[i for i in pred_ner_word_and_tag if i in actu_ner_word_and_tag]
-        print(correct)
-        if len(correct)!=0:
-            ner_accuracy_rate=float(correct)/len(pred_ner_word_and_tag)
-            ner_recall_rate=float(correct)/len(actu_ner_word_and_tag)
-            F1=2*ner_accuracy_rate*ner_recall_rate/(ner_accuracy_rate+ner_recall_rate)
-            print('test:')
-            print('ner_accuracy_rate:%.4f'%ner_accuracy_rate)
-            print('ner_recall_rate:%.4f'%ner_recall_rate)
-            print('F1:%.4f'%F1)
-            if F1>max_F1:
-                saver.save(sess,'../model/'+str(epoch)+'.ckpt')
-        else:
-            print('test:')
-            print('ner_accuracy_rate:0')
+        # for batch in range(num_test_batch_per_epoch):
+        #     batch_x,batch_y=test_data.next_batch(BATCH_SIZE)
+        #     pred=sess.run(viterbi_sequence,feed_dict={tf_x:batch_x,tf_y:batch_y,keep_prob:1})
+        #     pred_ner_word_and_tag.extend(get_ner_word_and_tag(batch_x,pred,id2word,id2tag))
+        #     actu_ner_word_and_tag.extend(get_ner_word_and_tag(batch_x,batch_y,id2word,id2tag))
+        #     #id2tag[pred]
+        #     print(pred.shape)
+        #     print(batch_x.shape)
+        #     print(batch_y.shape)
+        #     # for i in range(batch_y.shape[0]):
+        #     #     actu_ner_word_and_tag.append(id2tag[batch_y[i]])
+        # import operator
+        # correct=0
+        # for i in pred_ner_word_and_tag:
+        #     for j in actu_ner_word_and_tag:
+        #         if operator.eq(i,j):
+        #             correct+=1
+        #             break
+        # # correct=[i for i in pred_ner_word_and_tag if i in actu_ner_word_and_tag]
+        # print(correct)
+        # if len(correct)!=0:
+        #     ner_accuracy_rate=float(correct)/len(pred_ner_word_and_tag)
+        #     ner_recall_rate=float(correct)/len(actu_ner_word_and_tag)
+        #     F1=2*ner_accuracy_rate*ner_recall_rate/(ner_accuracy_rate+ner_recall_rate)
+        #     print('test:')
+        #     print('ner_accuracy_rate:%.4f'%ner_accuracy_rate)
+        #     print('ner_recall_rate:%.4f'%ner_recall_rate)
+        #     print('F1:%.4f'%F1)
+        #     if F1>max_F1:
+        #         saver.save(sess,'../model/'+str(epoch)+'.ckpt')
+        # else:
+        #     print('test:')
+        #     print('ner_accuracy_rate:0')

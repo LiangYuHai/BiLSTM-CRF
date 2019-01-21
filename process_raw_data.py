@@ -90,12 +90,12 @@ def data2pkl():
             ids.extend([0]*(max_len-len(ids)))
             return ids
     def tag_id_padding(tags):
-        tags=list(tag2id[tags])
-        if len(tags)>=max_len:
-            return tags[:max_len]
+        ids=list(tag2id[tags])
+        if len(ids)>=max_len:
+            return ids[:max_len]
         else:
-            tags.extend([0]*(max_len-len(tags)))
-            return tags
+            ids.extend([0]*(max_len-len(ids)))
+            return ids
     df_data['word_id']=df_data['word'].apply(word_id_padding)
     df_data['tag_id']=df_data['tag'].apply(tag_id_padding)
     word_id=np.asarray(list(df_data['word_id'].values))

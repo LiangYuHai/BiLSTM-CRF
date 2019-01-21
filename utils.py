@@ -1,5 +1,5 @@
-def get_ner_word_and_tag(x,y,id2word,id2tag):
-    res=[]
+def get_ner_word_and_tag(x,y,id2word,id2tag,res=[]):
+
     ner=[]
     for i in range(x.shape[0]):
         for j in range(x.shape[1]):
@@ -11,6 +11,8 @@ def get_ner_word_and_tag(x,y,id2word,id2tag):
                 ner.append(id2word[x[i][j]]+'/'+id2tag[y[i][j]])
             elif id2tag[y[i][j]][0]=='E' and len(ner)!=0 and ner[-1].split('/')[-1][1:]==id2tag[y[i][j]][1:]:
                 ner.append(id2word[x[i][j]]+'/'+id2tag[y[i][j]])
+                ner.append(str(i))
+                ner.append(str(j))
                 res.append(ner)
                 ner=[]
             else:
