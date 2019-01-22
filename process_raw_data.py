@@ -55,12 +55,13 @@ def data2pkl():
         numNotO=0
         for word_tag in words_tags:
             word_tag=word_tag.split('/')
-            words.append(word_tag[0])
-            words_per_line.append(word_tag[0])
-            tags.add(word_tag[1])
-            tags_per_line.append(word_tag[1])
-            if word_tag[1]!='O':
-                numNotO+=1
+            if len(word_tag)==2:
+                words.append(word_tag[0])
+                words_per_line.append(word_tag[0])
+                tags.add(word_tag[1])
+                tags_per_line.append(word_tag[1])
+                if word_tag[1]!='O':
+                    numNotO+=1
         if numNotO!=0:
             words2d.append(words_per_line)
             label2d.append(tags_per_line)
