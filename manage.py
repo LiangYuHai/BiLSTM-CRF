@@ -99,7 +99,7 @@ if len(sys.argv)==2 and sys.argv[1]=='train':
 from utils import padding
 if len(sys.argv)==2 and sys.argv[1]=='test':
     model=Model()
-    config['BATCH_SIZE'] = 1
+    config['BATCH_SIZE'] = 1 #想输入多少句话就设为多少，以标点符号为断句。
     model.init(config)
     model.build_net()
     sess = tf.Session()
